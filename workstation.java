@@ -90,80 +90,24 @@ class workerComparator implements Comparator<workers> {
 
     }
 }
-/*
- * import java.io.BufferedReader;
- * import java.io.BufferedWriter;
- * import java.io.IOException;
- * import java.io.InputStreamReader;
- * import java.io.OutputStreamWriter;
- * import java.io.PrintWriter;
- * import java.util.Comparator;
- * import java.util.PriorityQueue;
- * 
- * public class workstations {
- * public static void main(String[] args) throws IOException {
- * BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
- * PrintWriter pw = new PrintWriter(new BufferedWriter(new
- * OutputStreamWriter(System.out)));
- * 
- * 
- * String[] line = br.readLine().split(" ");
- * Integer N = Integer.parseInt(line[0]);
- * 
- * int workstationIdleTime = Integer.parseInt(line[1]);
- * 
- * 
- * PriorityQueue<workers> arrivalWorkers = new PriorityQueue<workers>(N, new
- * workerComparator());
- * PriorityQueue<Integer> workstations = new PriorityQueue<Integer>();
- * 
- * for (int i = 0; i<N; i++){ //Sort in increasing order
- * String[] workerLine = br.readLine().split(" ");
- * int arrivalTime = Integer.parseInt(workerLine[0]);
- * int stayingTime = Integer.parseInt(workerLine[1]);
- * arrivalWorkers.add(new workers(arrivalTime, stayingTime));
- * }
- * 
- * int unlock = 0;
- * 
- * while (!arrivalWorkers.isEmpty()){
- * workers nextWorker = arrivalWorkers.poll();
- * while (!workstations.isEmpty() && workstations.peek() + workstationIdleTime <
- * nextWorker.getArrival())
- * {
- * //if our grace period < our workers arrival time, we poll this off
- * workstations.poll(); //Remove it since we will never use it
- * }
- * 
- * //else it implies that arrivaltime <= workstation GRACE PERIOD
- * //end time >= my arrival time
- * if (!workstations.isEmpty()){
- * boolean isBelowUpperLimit = workstations.peek() + workstationIdleTime >=
- * nextWorker.getArrival();
- * boolean isAboveLowerLimit = nextWorker.getArrival()>= workstations.peek();
- * if (isBelowUpperLimit && isAboveLowerLimit)
- * {
- * workstations.poll();
- * }
- * else
- * { //implies my peek < nextWorker.GetArrival
- * unlock++;
- * }
- * } else {
- * unlock++;
- * }
- * 
- * 
- * 
- * workstations.add(nextWorker.getEnd()); //add nextWorker instead of doing
- * direct replacement
- * }
- * 
- * //pw.print(workstations);
- * pw.print(N-unlock);
- * pw.close();
- * }
- * 
- * }
- * 
- */
+
+    // //Alternative for above using Boolean -- Easier to understand
+
+
+    // while (!workstations.isEmpty() && workstations.peek() + workstationIdleTime < nextWorker.getArrival()) {
+    //             workstations.poll(); // Remove it since we will never use it
+    //     }
+    // if (!workstations.isEmpty()){
+    //     boolean isBelowUpperLimit = workstations.peek() + workstationIdleTime >= nextWorker.getArrival();    
+    //     boolean isAboveLowerLimit = nextWorker.getArrival()>= workstations.peek();
+    //     if (isBelowUpperLimit && isAboveLowerLimit){
+    //         workstations.poll();
+    //     }
+    //     else{ //implies my peek < nextWorker.GetArrival
+    //         unlock++;
+    //     }
+    // } 
+    // else {
+    //     unlock++;
+    // }
+
