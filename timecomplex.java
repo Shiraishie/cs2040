@@ -8,3 +8,6 @@ public class timecomplex {
             System.out.println(2147483647);
     } // The longer strign takes significantly longer to print
 }
+
+//this was a test to check time complexity
+// note that pw.print is faster for large values
