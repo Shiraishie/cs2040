@@ -126,6 +126,8 @@ class tq {
  * 3) make sure front and back list are always balanced so its easier to add our
  * middle element
  */
+// USE PW PRINT IN THIS CASE, IT HELPS PASS TESTCASES
+
 // notes -- time complexity of system.out.println depends on the number of
 // characters of being printed --> if we have large integer then long time
 // https://stackoverflow.com/questions/21326747/system-out-println-vs-printwriter-performance-comparison
