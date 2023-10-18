@@ -112,3 +112,8 @@ class UFDS {
     }
 
 }
+
+/*
+ * new operation: move; idea: do not destroy the parent array structure; also available at UVa 11987 - Almost Union-Find from CPbook.net
+ * so we need to keep parent array structure
+ */
