@@ -76,8 +76,8 @@ public class kattisquest {
  * QueryEnergy - EnergyUsed and do a while loop until our query returns null
  */
 */
-Optimized code
-    
+
+Cleaner Code below    
 public class kattisquest {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
