@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 
-//Tolentino Alexandra Morales //A0258632Y
+//Tolentino
 
 public class cardtrading {
     public static void main(String[] args) throws IOException {
