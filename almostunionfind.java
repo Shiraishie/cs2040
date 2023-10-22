@@ -101,8 +101,9 @@ class UFDS {
         int representativeofnext = findRepresentative(nextofi);
         // zomgggggggggggg
         next[i] = representativeofnext; // this is a line to optimize -- similar to flattening in a ufds to make time
-        // complexity faster so we dont hve to keep traversing the tree fdgsdfgsdf
+        // complexity faster so we dont hve to keep traversing the tree fdgsdfgsdf, not necessary
         //
+        
         return representativeofnext;
     }
 
@@ -119,7 +120,7 @@ class UFDS {
             int y = findSet(j); // does next[j] = rep[y]
             representative[x] = y; // union of our representatives apparently need to do x to y cause y to x doesnt
                                    // work???
-            next[i] = y; // optimiztion --> flattening...
+            next[i] = y; // optimiztion --> flattening... but not necessary
             // property changeeeeeee
             next[j] = y;
             sum[y] += sum[x];
