@@ -127,6 +127,23 @@ class UFDS {
             size[y] += size[x];
             size[x] = 0;
             sum[x] = 0;
+            /* heuristic jargons
+            if (size[x] >= size[y]) { // union y to x
+                representative[y] = x;
+                // next[y] = x;
+                sum[x] += sum[y];
+                size[x] += size[y];
+                size[y] = 0;
+                sum[y] = 0;
+            } else { // size[x] < size[y], we union x to y
+                representative[x] = y;
+                // next[x] = y;
+                sum[y] += sum[x];
+                size[y] += size[x];
+                size[x] = 0;
+                sum[x] = 0;
+            }
+            */
 
         }
     }
