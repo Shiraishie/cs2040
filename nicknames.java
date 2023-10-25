@@ -52,9 +52,13 @@ class AVLTree {
         node.right = leftofRightChild;
         rightChild.left = node;
 
+        // Change Height
+        node.height = node.left.height - node.right.height;
+        rightChild.height = rightChild.left.height - rightChild.right.height;
     }
 
     AVLVertex rightRotate(AVLVertex node) { // Node is Q -- using lecture notes as reference pg 31 of L11
+        // left Child becomes new vertex
         AVLVertex nodeparent = node.parent;
         AVLVertex leftChild = node.left; // P
         AVLVertex rightofLeftChild = leftChild.right; // B
@@ -67,8 +71,9 @@ class AVLTree {
         node.left = rightofLeftChild; // Q left points to B
         leftChild.right = node; // P right points to Q;
 
-        // Change height
-
+        // Change height of both left child and node
+        node.height = node.left.height - node.right.height;
+        leftChild.height = leftChild.left.height - leftChild.right.height;
     }
 
 }
