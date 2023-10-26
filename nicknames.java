@@ -35,8 +35,13 @@ class AVLTree {
         this.root = null;
     }
 
-    int height(AVLVertex node) {
-        return node.height;
+    int max(AVLVertex left, AVLVertex right) { //Custom
+        if (left.height > right.height){
+            return left.height;
+        }
+        else{
+            return right.height;
+        }
     }
 
     AVLVertex leftRotate(AVLVertex node) {
@@ -44,7 +49,7 @@ class AVLTree {
         AVLVertex rightChild = node.right;
         AVLVertex leftofRightChild = rightChild.left;
 
-        // set Parent
+        // set Parents
         rightChild.parent = nodeparent;
         node.parent = rightChild;
 
@@ -53,9 +58,13 @@ class AVLTree {
         rightChild.left = node;
 
         // Change Height
-        node.height = node.left.height - node.right.height;
-        rightChild.height = rightChild.left.height - rightChild.right.height;
+        node.height = max(node.left, node.right)+1;
+        rightChild.height = max(rightChild.left, rightChild.right) + 1;
+
+        return rightChild;
     }
+
+
 
     AVLVertex rightRotate(AVLVertex node) { // Node is Q -- using lecture notes as reference pg 31 of L11
         // left Child becomes new vertex
@@ -72,11 +81,32 @@ class AVLTree {
         leftChild.right = node; // P right points to Q;
 
         // Change height of both left child and node
-        node.height = node.left.height - node.right.height;
-        leftChild.height = leftChild.left.height - leftChild.right.height;
+        node.height = max(node.left , node.right) + 1;
+        leftChild.height = max(leftChild.left , leftChild.right) + 1;
+    
+        return leftChild;
+    
     }
 
+
+    //Can have double rotations
+    int bf(AVLVertex vertex){ //returns balance factor
+        return (vertex.left.height - vertex.right.height);
+    }
+
+    insert(String name, AVLVertex vertex){
+        if (vertex == null){
+            return (new AVLVertex(name)); // point of insertion
+        }
+        else if(newVertex.name.compareTo(this.root.name) < 0){ //
+
+        }
+    }
+
+
 }
+
+
 
 
 class Kattio extends PrintWriter {
