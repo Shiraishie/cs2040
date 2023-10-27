@@ -225,5 +225,74 @@ class AVLTree {
 }
 
 /*
- * 
- */
+public class nicknames {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)));
+
+        // AVLTree avl = new AVLTree();
+        AVLTree[] arr = new AVLTree[26]; // Direct Addressing Table
+        int A = Integer.parseInt(br.readLine());
+        for (int i = 0; i < A; i++) {
+            String name = br.readLine();
+            int firstCharIDX = name.charAt(0) - 97; // ASCII
+            if (arr[firstCharIDX] == null) {
+                AVLTree avl = new AVLTree();
+                avl.insert(name);
+                arr[firstCharIDX] = avl;
+            } else {
+                arr[firstCharIDX].insert(name);
+            }
+        }
+        int B = Integer.parseInt(br.readLine());
+        for (int j = 0; j < B; j++) {
+            String nickname = br.readLine();
+            int firstCharIDX = nickname.charAt(0) - 97;
+            if (arr[firstCharIDX] != null) {
+                pw.println(arr[firstCharIDX].search(nickname, arr[firstCharIDX].root));
+            } else {
+                pw.println(0);
+            }
+            // pw.println(avl.search(nickname, avl.root));
+        }
+        pw.close();
+    }
+
+    int search(String nickname, AVLVertex vertex) {
+        if (vertex == null) {
+            return 0;
+        }
+        int count = 0;
+        int lengthofnickname = nickname.length();
+        String sliced = vertex.name.substring(0, lengthofnickname);
+        if (nickname.compareTo(sliced) == 0) { // if same -- we check both left and right subtree
+            count++;
+            if (vertex.left == null && vertex.right != null) {
+                int y = search(nickname, vertex.right);
+                count += y;
+            } else if (vertex.right == null && vertex.left != null) {
+                int x = search(nickname, vertex.left);
+                count += x;
+            } else {
+                int x = search(nickname, vertex.right);
+                int y = search(nickname, vertex.left);
+                count = count + x + y;
+            }
+
+        } else if (nickname.compareTo(sliced) < 0) { // so my nicknam
+            if (vertex.left != null) {
+                int x = search(nickname, vertex.left);
+                count += x;
+            }
+
+        } else {
+            if (vertex.right != null) {
+                int x = search(nickname, vertex.right);
+                count += x;
+            }
+
+        }
+        return count;
+    }
+}
+*/
