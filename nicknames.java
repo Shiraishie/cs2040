@@ -4,720 +4,272 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.HashMap;
 
-public class nicknames {
+class nicknames {
+
     public static void main(String[] args) throws IOException {
-        // Kattio io = new Kattio(System.in, System.out);
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)));
-
+        // Data Structures
         AVLTree avl = new AVLTree();
-        int A = Integer.parseInt(br.readLine());
+        HashMap<String, Integer> hashmap = new HashMap<String, Integer>(); // repeated queries
+        //
+        int A = Integer.parseInt(br.readLine()); // Number of names
         for (int i = 0; i < A; i++) {
             String name = br.readLine();
             avl.insert(name);
         }
-        int B = Integer.parseInt(br.readLine());
-        for (int j = 0; j < B; j++) {
+        int B = Integer.parseInt(br.readLine()); // Number of nicknames to query
+        for (int i = 0; i < B; i++) {
             String nickname = br.readLine();
-            pw.println(avl.search(nickname, avl.root));
+            if (!hashmap.containsKey(nickname)) {
+                int count = avl.search(nickname);
+                hashmap.put(nickname, count);
+            } // repeated queries
+            pw.println(hashmap.get(nickname));
         }
+
         pw.close();
     }
-
 }
 
-class AVLVertex {
+class Node {
+    // int properties
+    int height; // num of max edges
+    int size; // num of nodes
+    //
+    Node parent;
+    Node left;
+    Node right;
+    //
+    String key;
 
-    String name;
-    int height; // To keep track of balance factor
-
-    AVLVertex parent;
-    AVLVertex left;
-    AVLVertex right;
-
-    AVLVertex(String name) {
-        this.height = 0;
-        this.name = name;
-        this.parent = null;
-        this.left = null;
-        this.right = null;
-
-    }
-
-}
-
-// Sort out our AVL tree first
-class AVLTree {
-
-    AVLVertex root;
-
-    AVLTree() { // Initialization results in empty AVLTree
-        this.root = null;
-    }
-
-    int search(String nickname, AVLVertex vertex) {
-        if (vertex == null) {
-            return 0;
-        }
-        int count = 0;
-        int lengthofnickname = nickname.length();
-        String sliced = vertex.name.substring(0, lengthofnickname);
-        if (nickname.compareTo(sliced) == 0) { // if same -- we check both left and right subtree
-            count++;
-            if (vertex.left == null && vertex.right != null) {
-                int y = search(nickname, vertex.right);
-                count += y;
-            } else if (vertex.right == null && vertex.left != null) {
-                int x = search(nickname, vertex.left);
-                count += x;
-            } else {
-                int x = search(nickname, vertex.right);
-                int y = search(nickname, vertex.left);
-                count = count + x + y;
-            }
-
-        } else if (nickname.compareTo(sliced) < 0) { // so my nicknam
-            if (vertex.left != null) {
-                int x = search(nickname, vertex.left);
-                count += x;
-            }
-
-        } else {
-            if (vertex.right != null) {
-                int x = search(nickname, vertex.right);
-                count += x;
-            }
-
-        }
-        return count;
-    }
-
-    int max(int left, int right) { // Custom
-        if (left > right) {
-            return left;
-        } else {
-            return right;
-        }
-    }
-
-    // not same as height
-    int bf(AVLVertex vertex) { // returns balance factor
-        if (vertex == null) { // left - right height == 0 since null
-            return 0;
-        } else {
-            return (heightCheck(vertex.left) - heightCheck(vertex.right));
-        }
-    }
-
-    // check height of vertex
-    int heightCheck(AVLVertex vertex) { //
-        if (vertex == null) {
-            return -1;
-        } else {
-            return vertex.height;
-        }
-    }
-
-    // from lecture notes
-    AVLVertex leftRotate(AVLVertex node) { // P
-        if (node != null) {
-            AVLVertex rightChild = node.right; // Q
-            AVLVertex rightLeftChild = rightChild.left; // B
-
-            // set Parents
-            rightChild.parent = node.parent;
-            if (node.parent == null) {
-                this.root = rightChild;
-            }
-            node.parent = rightChild;
-
-            // Rotation
-            node.right = rightLeftChild;
-            if (rightLeftChild != null) {
-                rightLeftChild.parent = node;
-            }
-            rightChild.left = node;
-
-            // Change Height change this
-            node.height = max(heightCheck(node.left), heightCheck(node.right)) + 1;
-            rightChild.height = max(heightCheck(rightChild.left), heightCheck(rightChild.right)) + 1;
-
-            return rightChild;
-        }
-        return node;
-    }
-
-    // frm lecture notes
-    AVLVertex rightRotate(AVLVertex node) { // Node is Q -- using lecture notes as reference pg 31 of L11
-        // left Child becomes new vertex
-        if (node != null) {
-            AVLVertex leftChild = node.left; // P
-            AVLVertex leftRightChild = leftChild.right; // B
-
-            // set Parent
-            leftChild.parent = node.parent;
-            if (node.parent == null) {
-                this.root = leftChild;
-            }
-            node.parent = leftChild;
-
-            // Rotation
-            node.left = leftRightChild; // Q left points to B
-            if (leftRightChild != null) {
-                leftRightChild.parent = node;
-            }
-            leftChild.right = node; // P right points to Q;
-
-            // Change height of both left child and node
-            node.height = max(heightCheck(node.left), heightCheck(node.right)) + 1;
-            leftChild.height = max(heightCheck(leftChild.left), heightCheck(leftChild.right)) + 1;
-
-            return leftChild; // returns this because helper recursive function will auto set its parent
-
-        }
-        return node;
-    }
-
-    // Rotation function making use of left and right rotate ^^
-    AVLVertex rotateFunction(AVLVertex vertex) {
-        if (bf(vertex) == 2) {
-            if (bf(vertex.left) == -1) {
-                vertex.left = leftRotate(vertex.left);
-            }
-            vertex = rightRotate(vertex); // set vertex to be our rotation so our insert function doesnt bug out
-        } else if (bf(vertex) == -2) {
-            if (bf(vertex.right) == 1) {
-                vertex.right = rightRotate(vertex.right);
-            }
-            vertex = leftRotate(vertex);
-        }
-        return vertex;
-    }
-
-    // overloading insert function
-    void insert(String name) { // insert at the root
-        this.root = insert(name, this.root);
-    }
-
-    AVLVertex insert(String name, AVLVertex vertex) {
-        if (vertex == null) {
-            return (new AVLVertex(name)); // implies that the child is null --> so we change that null into a node
-
-        }
-        // do height change.
-        if (name.compareTo(vertex.name) < 0) { //
-            // Left Insertion
-            vertex.left = insert(name, vertex.left);
-            vertex.left.parent = vertex;
-        } else {
-            // Right Rotation
-            vertex.right = insert(name, vertex.right);
-            vertex.right.parent = vertex;
-        }
-        // Height Update
-        vertex.height = max(heightCheck(vertex.left), heightCheck(vertex.right)) + 1;
-
-        return rotateFunction(vertex); // Rotates this vertex before going back to its parent vertex to check for
-                                       // rotation again
-    }
-
-}
-
-/*
-public class nicknames {
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)));
-
-        // AVLTree avl = new AVLTree();
-        AVLTree[] arr = new AVLTree[26]; // Direct Addressing Table
-        int A = Integer.parseInt(br.readLine());
-        for (int i = 0; i < A; i++) {
-            String name = br.readLine();
-            int firstCharIDX = name.charAt(0) - 97; // ASCII
-            if (arr[firstCharIDX] == null) {
-                AVLTree avl = new AVLTree();
-                avl.insert(name);
-                arr[firstCharIDX] = avl;
-            } else {
-                arr[firstCharIDX].insert(name);
-            }
-        }
-        int B = Integer.parseInt(br.readLine());
-        for (int j = 0; j < B; j++) {
-            String nickname = br.readLine();
-            int firstCharIDX = nickname.charAt(0) - 97;
-            if (arr[firstCharIDX] != null) {
-                pw.println(arr[firstCharIDX].search(nickname, arr[firstCharIDX].root));
-            } else {
-                pw.println(0);
-            }
-            // pw.println(avl.search(nickname, avl.root));
-        }
-        pw.close();
-    }
-
-    int search(String nickname, AVLVertex vertex) {
-        if (vertex == null) {
-            return 0;
-        }
-        int count = 0;
-        int lengthofnickname = nickname.length();
-        String sliced = vertex.name.substring(0, lengthofnickname);
-        if (nickname.compareTo(sliced) == 0) { // if same -- we check both left and right subtree
-            count++;
-            if (vertex.left == null && vertex.right != null) {
-                int y = search(nickname, vertex.right);
-                count += y;
-            } else if (vertex.right == null && vertex.left != null) {
-                int x = search(nickname, vertex.left);
-                count += x;
-            } else {
-                int x = search(nickname, vertex.right);
-                int y = search(nickname, vertex.left);
-                count = count + x + y;
-            }
-
-        } else if (nickname.compareTo(sliced) < 0) { // so my nicknam
-            if (vertex.left != null) {
-                int x = search(nickname, vertex.left);
-                count += x;
-            }
-
-        } else {
-            if (vertex.right != null) {
-                int x = search(nickname, vertex.right);
-                count += x;
-            }
-
-        }
-
-
-        return count;
-    }
-}
-*/
-
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.util.HashMap;
-
-/*
- * Check which vertices its no longer the same -- then root size - that
- * 
- * Use a hashmap or hashtable for repeated queries
- * Find start and end point and just minus instead of searching all nodes.
- */
-
-
-public class nicknames {
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)));
-
-        // AVLTree avl = new AVLTree();
-        AVLTree[] arr = new AVLTree[26]; // Direct Addressing Table for first nickname;
-        int A = Integer.parseInt(br.readLine());
-        HashMap<String,Integer> map = new HashMap<>(); //To store my queries
-
-
-        //AVL Tree Insertion
-        //AVL Tree storing at array using first character
-        for (int i = 0; i < A; i++) {
-            String name = br.readLine();
-            int firstCharIDX = name.charAt(0) - 97; // ASCII
-            if (arr[firstCharIDX] == null) {
-                AVLTree avl = new AVLTree();
-                avl.insert(name);
-                arr[firstCharIDX] = avl;
-            } else {
-                arr[firstCharIDX].insert(name);
-            }
-        }
-        //
-        //AVL Tree Search
-        int B = Integer.parseInt(br.readLine());
-        for (int j = 0; j < B; j++) {
-            String nickname = br.readLine();
-            int firstCharIDX = nickname.charAt(0) - 97;
-            if (arr[firstCharIDX] == null){ //Directly checks DAT
-                pw.println(0);
-                continue;
-            }
-            if (nickname.length() == 1){ //checks size directly without looping through as its the whole tree if length == 1
-                pw.println(arr[firstCharIDX].root.size);
-                continue;    
-            }
-            else{ //if not null and nickname.length > 1 //Checks AVL Tree then puts it into a map.
-                AVLVertex lca = arr[firstCharIDX].lca(nickname, arr[firstCharIDX].root); //lowest common ancestor
-                pw.println(arr[firstCharIDX].testSearch(nickname, lca));
-                if (map.get(nickname) == null){
-                    int x = arr[firstCharIDX].search(nickname, arr[firstCharIDX].root);
-                    map.put(nickname, x);
-                    //pw.println(x);
-                }
-                else{
-                    //pw.println(map.get(nickname));
-                }
-            }
-        }
-    pw.close();
-    }
-}
-
-class AVLVertex {
-
-    String name;
-    int height; // To keep track of balance factor
-    int size; // Keeps track of the size of our 'root'
-
-    AVLVertex parent;
-    AVLVertex left;
-    AVLVertex right;
-    
-
-    AVLVertex(String name) {
+    Node(String key) {
         this.height = 0;
         this.size = 1;
-        //
-        this.name = name;
-        //
-        this.parent = null;
-        this.left = null;
-        this.right = null;
-
+        this.parent = this.left = this.right = null;
+        this.key = key;
     }
 
 }
 
-// Sort out our AVL tree first
 class AVLTree {
+    Node root;
 
-    AVLVertex root;
-
-    AVLTree() { // Initialization results in empty AVLTree
+    // Initialization
+    AVLTree() {
         this.root = null;
     }
-
-    //Check left and right vertices -- if right
-    // int search(String nickname, AVLVertex vertex){
-    //     if (vertex == null){
-    //         return 0;
-    //     }
-    //     int count = 0;
-    //     int lengthofnickname = nickname.length();
-    //     String slicedvertex = vertex.name.substring(0, lengthofnickname); //my sliced name for avl tree
-    //     int compareTo = nickname.compareTo(slicedvertex);
-    //     if (compareTo == 0){ //does search until we reach a subtree
-    //         count += vertex.size;
-    //         return count; //return size of my vertex (subtrees)
-    //     }
-    //     else if (compareTo == 1){ // search right subtree
-    //         int x = search(nickname, vertex.right);
-    //         count += x;
-    //         //return x;
-    //     }
-    //     else{ //search left subtree
-    //         int x = search(nickname, vertex.left);
-    //         count += x;
-    //         //return x;
-    //     }
-    //     //count += x;
-    //     return count;
-
-    // }
-
-    //lowest common ancestor
-    AVLVertex lca (String nickname, AVLVertex vertex){
-        int lengthofnickname = nickname.length();
-        String sliced = vertex.name.substring(0,lengthofnickname);
-        if (nickname.compareTo(sliced) == 0){
-            return vertex;
-        }
-        else if (nickname.compareTo(sliced) == -1){
-            vertex = lca(nickname, vertex.left);
-        }else{
-            vertex = lca(nickname, vertex.right);
-        }
-        return vertex;
-    }
-    //find start annd end pint
-    //use lowest common ancestor
-    int testSearch(String nickname, AVLVertex vertex){
-        if (vertex == null){ //null vertex condition
-            return 0;
-        }
-        int lengthofnickname = nickname.length();
-        String sliced = vertex.name.substring(0, lengthofnickname);
-        //
-        int count = 0;
-        if (nickname.compareTo(sliced) == 0){
-            //int sizeofVertex = vertex.size; //Vertex that it is equal substring == start point
-            count = 1 + testSearch(nickname, vertex.left) + testSearch(nickname, vertex.right);
-            return count;
-        }if (nickname.compareTo(sliced) == -1 || nickname.compareTo(sliced) == 1);{
-            if (nickname.compareTo(sliced))
-            return 0;
-        }
-        
-    }
     //
-    int search(String nickname, AVLVertex vertex) {
-        if (vertex == null) {
+
+    int getRootSize() {
+        if (this.root == null) {
             return 0;
         }
-        int count = 0;
-        int lengthofnickname = nickname.length();
-        String sliced = vertex.name.substring(0, lengthofnickname);
-        if (nickname.compareTo(sliced) == 0) { // if same -- we check both left and right subtree
-            count++;
-            if (vertex.left == null && vertex.right != null) {
-                int y = search(nickname, vertex.right);
-                count += y;
-            } else if (vertex.right == null && vertex.left != null) {
-                int x = search(nickname, vertex.left);
-                count += x;
-            } else {
-                int x = search(nickname, vertex.right);
-                int y = search(nickname, vertex.left);
-                count = count + x + y;
-            }
-
-        } else if (nickname.compareTo(sliced) < 0) { // so my nicknam
-            if (vertex.left != null) {
-                int x = search(nickname, vertex.left);
-                count += x;
-            }
-
-        } else {
-            if (vertex.right != null) {
-                int x = search(nickname, vertex.right);
-                count += x;
-            }
-
-        }
-        return count;
+        return getSize(this.root);
     }
 
-    int max(int left, int right) { // Custom
-        if (left > right) {
-            return left;
-        } else {
-            return right;
-        }
-    }
-
-    // not same as height
-    int bf(AVLVertex vertex) { // returns balance factor
-        if (vertex == null) { // left - right height == 0 since null
+    int getSize(Node node) {
+        if (node == null) {
             return 0;
         } else {
-            return (heightCheck(vertex.left) - heightCheck(vertex.right));
+            return node.size;
         }
     }
 
-    // check height of vertex
-    int heightCheck(AVLVertex vertex) { //
-        if (vertex == null) {
+    int getHeight(Node node) {
+        if (node == null) {
             return -1;
         } else {
-            return vertex.height;
+            return node.height;
         }
     }
 
-    int sizeCheck(AVLVertex vertex){
-        if (vertex == null){
+    int balanceFactor(Node node) {
+        if (node == null) {
             return 0;
         }
-        else{
-            return sizeCheck(vertex.left) + sizeCheck(vertex.right) + 1;
+        return (getHeight(node.left) - getHeight(node.right));
+    }
+
+    int updateHeight(Node node) { // check
+        if (node == null) {
+            return 0;
+        }
+        return (1 + max(getHeight(node.left), getHeight(node.right)));
+    }
+
+    int updateSize(Node node) {
+        if (node == null) {
+            return 0;
+        }
+        return (1 + getSize(node.left) + getSize(node.right));
+    }
+
+    int max(int a, int b) {
+        if (a >= b) {
+            return a;
+        } else {
+            return b;
         }
     }
 
-    // from lecture notes
-    AVLVertex leftRotate(AVLVertex node) { // P
-        if (node != null) {
-            AVLVertex rightChild = node.right; // Q
-            AVLVertex rightLeftChild = rightChild.left; // B
+    Node leftRotate(Node T) {
+        if (T.right != null) {
+            Node w = T.right;
+            w.parent = T.parent; // w = Q and T = P;
+            T.parent = w;
 
-            // set Parents
-            rightChild.parent = node.parent;
-            if (node.parent == null) {
-                this.root = rightChild;
+            // Update Parent pointers
+            if (w.parent == null) { // If new root has a null parent, we set it as the root
+                this.root = w;
+            } else if (w.parent.left == T) { // Parent pointer
+                w.parent.left = w;
+            } else if (w.parent.right == T) {
+                w.parent.right = w;
             }
-            node.parent = rightChild;
-
-            // Rotation
-            node.right = rightLeftChild;
-            if (rightLeftChild != null) {
-                rightLeftChild.parent = node;
+            //
+            if (w.left != null) {
+                w.left.parent = T;
             }
-            rightChild.left = node;
+            T.right = w.left;
+            w.left = T;
+            // Property updating
+            T.height = updateHeight(T);
+            T.size = updateSize(T);
+            w.height = updateHeight(w);
+            w.size = updateSize(w);
+            return w; // new root node
 
-            // Change Height change this
-            node.height = max(heightCheck(node.left), heightCheck(node.right)) + 1;
-            node.size = sizeCheck(node);
-            rightChild.height = max(heightCheck(rightChild.left), heightCheck(rightChild.right)) + 1;
-            rightChild.size = sizeCheck(rightChild);
-
-            return rightChild;
         }
+        return T; // if null, return T because no rotation can be done
+    }
+
+    Node rightRotate(Node T) {
+        if (T.left != null) {
+            Node w = T.left;
+            w.parent = T.parent;
+            if (w.parent == null) {
+                this.root = w;
+            } else if (w.parent.left == T) {
+                w.parent.left = w;
+            } else if (w.parent.right == T) {
+                w.parent.right = w;
+            }
+            if (w.right != null) {
+                w.right.parent = T;
+            }
+            T.left = w.right;
+            w.right = T;
+            //
+            T.height = updateHeight(T);
+            T.size = updateSize(T);
+            w.height = updateHeight(w);
+            w.size = updateSize(w);
+            return w; // new root
+        }
+        return T;
+    }
+
+    Node rebalance(Node node) {
+        int bf = balanceFactor(node);
+        if (bf == 2) { // Left Heavy
+            int bfChild = balanceFactor(node.left);
+            if (bfChild == -1) {
+                // Left-Right Rotation
+                node.left = leftRotate(node.left);
+            }
+            node = rightRotate(node);
+            // Rotate already updates our properties
+
+        }
+
+        else if (bf == -2) { // Right Heavy
+            int bfChild = balanceFactor(node.right);
+            if (bfChild == 1) {
+                node.right = rightRotate(node.right); // don't do rightRotate(node.right) directly because it returns a
+                                                      // node;
+            }
+            node = leftRotate(node);
+        }
+        // if balance factor is -1,0,1, does nothing
         return node;
     }
 
-    // frm lecture notes
-    AVLVertex rightRotate(AVLVertex node) { // Node is Q -- using lecture notes as reference pg 31 of L11
-        // left Child becomes new vertex
-        if (node != null) {
-            AVLVertex leftChild = node.left; // P
-            AVLVertex leftRightChild = leftChild.right; // B
-
-            // set Parent
-            leftChild.parent = node.parent;
-            if (node.parent == null) {
-                this.root = leftChild;
-            }
-            node.parent = leftChild;
-
-            // Rotation
-            node.left = leftRightChild; // Q left points to B
-            if (leftRightChild != null) {
-                leftRightChild.parent = node;
-            }
-            leftChild.right = node; // P right points to Q;
-
-            // Change height of both left child and node
-            node.height = max(heightCheck(node.left), heightCheck(node.right)) + 1;
-            node.size = sizeCheck(node);
-            leftChild.height = max(heightCheck(leftChild.left), heightCheck(leftChild.right)) + 1;
-            leftChild.size = sizeCheck(leftChild);
-
-            return leftChild; // returns this because helper recursive function will auto set its parent
-
-        }
-        return node;
+    void insert(String nickname) {
+        this.root = insert(nickname, this.root);
     }
 
-    // Rotation function making use of left and right rotate ^^
-    AVLVertex rotateFunction(AVLVertex vertex) {
-        if (bf(vertex) == 2) {
-            if (bf(vertex.left) == -1) {
-                vertex.left = leftRotate(vertex.left);
-            }
-            vertex = rightRotate(vertex); // set vertex to be our rotation so our insert function doesnt bug out
-        } else if (bf(vertex) == -2) {
-            if (bf(vertex.right) == 1) {
-                vertex.right = rightRotate(vertex.right);
-            }
-            vertex = leftRotate(vertex);
+    Node insert(String nickname, Node node) {
+        if (node == null) { // Base Case
+            return (new Node(nickname));
         }
-        return vertex;
-    }
-
-    // overloading insert function
-    void insert(String name) { // insert at the root
-        this.root = insert(name, this.root);
-    }
-
-    AVLVertex insert(String name, AVLVertex vertex) {
-        if (vertex == null) {
-            return (new AVLVertex(name)); // implies that the child is null --> so we change that null into a node
-
-        }
-        //
-        if (name.compareTo(vertex.name) < 0) { //
-            // Left Insertion
-            vertex.left = insert(name, vertex.left);
-            vertex.left.parent = vertex;
+        if (nickname.compareTo(node.key) < 0) { // nickname < key
+            node.left = insert(nickname, node.left);
+            node.left.parent = node;
         } else {
-            // Right Insertion
-            vertex.right = insert(name, vertex.right);
-            vertex.right.parent = vertex;
+            node.right = insert(nickname, node.right);
+            node.right.parent = node;
         }
-        // Height Update
-        vertex.height = max(heightCheck(vertex.left), heightCheck(vertex.right)) + 1;
-        vertex.size = sizeCheck(vertex);
-        return rotateFunction(vertex); // Rotates this vertex before going back to its parent vertex to check for
-                                       // rotation again
+        // Recursively updates height & size of our node before we do balancing
+        node.height = updateHeight(node);
+        node.size = updateSize(node);
+        return rebalance(node);
     }
 
-}
-
-/*
-public class nicknames {
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)));
-
-        // AVLTree avl = new AVLTree();
-        AVLTree[] arr = new AVLTree[26]; // Direct Addressing Table
-        int A = Integer.parseInt(br.readLine());
-        for (int i = 0; i < A; i++) {
-            String name = br.readLine();
-            int firstCharIDX = name.charAt(0) - 97; // ASCII
-            if (arr[firstCharIDX] == null) {
-                AVLTree avl = new AVLTree();
-                avl.insert(name);
-                arr[firstCharIDX] = avl;
-            } else {
-                arr[firstCharIDX].insert(name);
-            }
+    Node lowestcommonancestor(String nickname, Node node) { // finds first lowest common ancestor which is the subtree
+                                                            // to search
+        if (node == null) { // Null case;
+            return null;
         }
-        int B = Integer.parseInt(br.readLine());
-        for (int j = 0; j < B; j++) {
-            String nickname = br.readLine();
-            int firstCharIDX = nickname.charAt(0) - 97;
-            if (arr[firstCharIDX] != null) {
-                pw.println(arr[firstCharIDX].search(nickname, arr[firstCharIDX].root));
-            } else {
-                pw.println(0);
-            }
-            // pw.println(avl.search(nickname, avl.root));
+        String key = node.key;
+        boolean checkPrefix = key.startsWith(nickname);
+        if (checkPrefix) { // If node is LCA, return node
+            return node;
+        } else if (nickname.compareTo(key) < 0) { // nickname is to the left
+            return lowestcommonancestor(nickname, node.left);
+        } else {
+            return lowestcommonancestor(nickname, node.right);
         }
-        pw.close();
     }
 
-    int search(String nickname, AVLVertex vertex) {
-        if (vertex == null) {
+    int search(String nickname) {
+        Node lca = lowestcommonancestor(nickname, this.root);
+        if (lca == null) { // No lowest common ancestor
             return 0;
+        } else { // Have lowest common ancestor
+            return 1 + leftQuery(nickname, lca.left) + rightQuery(nickname, lca.right); // Start query on our subtree;
         }
-        int count = 0;
-        int lengthofnickname = nickname.length();
-        String sliced = vertex.name.substring(0, lengthofnickname);
-        if (nickname.compareTo(sliced) == 0) { // if same -- we check both left and right subtree
-            count++;
-            if (vertex.left == null && vertex.right != null) {
-                int y = search(nickname, vertex.right);
-                count += y;
-            } else if (vertex.right == null && vertex.left != null) {
-                int x = search(nickname, vertex.left);
-                count += x;
-            } else {
-                int x = search(nickname, vertex.right);
-                int y = search(nickname, vertex.left);
-                count = count + x + y;
-            }
 
-        } else if (nickname.compareTo(sliced) < 0) { // so my nicknam
-            if (vertex.left != null) {
-                int x = search(nickname, vertex.left);
-                count += x;
-            }
+    }
 
+    int leftQuery(String nickname, Node leftNode) { // In
+        if (leftNode == null) {
+            return 0;
         } else {
-            if (vertex.right != null) {
-                int x = search(nickname, vertex.right);
-                count += x;
+            boolean checkPrefix = leftNode.key.startsWith(nickname);
+            if (checkPrefix) { // If it descends to the left --> then leftNode <= leftNode. right Tree are
+                               // nodes that start with nickname <= initialNode
+                return 1 + getSize(leftNode.right) + leftQuery(nickname, leftNode.left); // leftNode + size of Right
+                                                                                         // subtree of leftNode + query
+                                                                                         // the left
+            } else {
+                return leftQuery(nickname, leftNode.right);
             }
-
         }
-        return count;
+    }
+
+    int rightQuery(String nickname, Node rightNode) {
+        if (rightNode == null) {
+            return 0;
+        } else {
+            boolean checkPrefix = rightNode.key.startsWith(nickname);
+            if (checkPrefix) {
+                return 1 + getSize(rightNode.left) + rightQuery(nickname, rightNode.right);
+            } else {
+                return rightQuery(nickname, rightNode.left);
+            }
+        }
     }
 }
-*/
