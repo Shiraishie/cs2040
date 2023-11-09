@@ -118,6 +118,9 @@ class EdgeWeightComparator implements Comparator<Edge> {
 
 /*
  * Do Kruskal Algorithm to make a minimum spanning tree
+ * Did a hybrid(While PQ Loop instead of for loop)
+ * Kruskal starts from smallest edge weight whereas Prims -- u can start from a
+ * root node that u like
  * Use UFDS to keep track of parents
  * Just iterate edges that are present in MST
  */
