@@ -17,7 +17,7 @@ public class dominos {
         for (int k = 0; k < testCase; k++) {
             String[] line = br.readLine().split(" ");
             int n = Integer.parseInt(line[0]);// domino num
-            int m = Integer.parseInt(line[0]);// lines in test case
+            int m = Integer.parseInt(line[1]);// lines in test case
 
             // initialization
             int[] visited = new int[n + 1];
@@ -45,15 +45,15 @@ public class dominos {
                 }
             }
 
-            LinkedList<Integer>[] tranpose = getTranspose(adjList);
+           // LinkedList<Integer>[] tranpose = getTranspose(adjList);
             int SCC = 0; // Total number of SCC's
-            Queue<Integer> q = new LinkedList<>();
-            // Kosaraju Algo
+            //Queue<Integer> q = new LinkedList<>();
+            // Altered Kosaraju Algo, TopoSort on the OG graph instead
             while (!topoStack.isEmpty()) {
                 int v = topoStack.pop();
                 if (visited2[v] == 0) {
-                    DFS(v, visited2, tranpose);
-                    q.add(v); // Adds all SCC's into a queue
+                    DFS(v, visited2, adjList);
+                    //q.add(v); // Adds all SCC's into a queue
                     SCC++;
                 }
             }
@@ -86,22 +86,22 @@ public class dominos {
         }
     }
 
-    static LinkedList<Integer>[] getTranspose(LinkedList<Integer>[] adjList) {
-        int adjListSize = adjList.length;
-        LinkedList<Integer>[] transpose = new LinkedList[adjListSize];
-        for (int i = 1; i < adjListSize; i++) {
-            transpose[i] = new LinkedList<Integer>();
-        }
+    // static LinkedList<Integer>[] getTranspose(LinkedList<Integer>[] adjList) {
+    //     int adjListSize = adjList.length;
+    //     LinkedList<Integer>[] transpose = new LinkedList[adjListSize];
+    //     for (int i = 1; i < adjListSize; i++) {
+    //         transpose[i] = new LinkedList<Integer>();
+    //     }
 
-        for (int i = 1; i < adjListSize; i++) {
-            LinkedList<Integer> check = adjList[i];
-            for (int j = 0; j < check.size(); j++) {
-                int y = check.get(j);
-                transpose[y].add(i);
-            }
-        }
-        return transpose;
-    }
+    //     for (int i = 1; i < adjListSize; i++) {
+    //         LinkedList<Integer> check = adjList[i];
+    //         for (int j = 0; j < check.size(); j++) {
+    //             int y = check.get(j);
+    //             transpose[y].add(i);
+    //         }
+    //     }
+    //     return transpose;
+    // }
 }
 
 /*
@@ -109,4 +109,6 @@ public class dominos {
  * DFS to get topoSort
  * Transpose Graph
  * DFS on modified graph according to topo
+
+ Dont need to DFS on transpose, DFS according to topo on the original
  */
