@@ -25,7 +25,8 @@ Island3
 
 Lost Map
 
-THA
+THA -- 2 weeks assignments
+
 bestrelayteam, cardtrading
 
 joinstrings, teque
