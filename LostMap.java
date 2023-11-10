@@ -5,55 +5,44 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
-public class LostMap {
+public class lostmap {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)));
         int n = Integer.parseInt(br.readLine());
 
         UFDS ufds = new UFDS(n);
-        PriorityQueue<Edge> pq = new PriorityQueue<>(new EdgeWeightComparator());
-        boolean[][] edgeAdded = new boolean[n + 1][n + 1];
-
-        // Set up for edges
+        ArrayList<Edge> lst = new ArrayList<>();
+        // Set up for edges O(N^2)
         for (int i = 0; i < n; i++) {
             String[] edgeData = br.readLine().split(" ");
-
-            // Making PQ with all edges that are unrepeated
+            int source = i + 1;
             for (int j = 0; j < n; j++) {
-                int source = i + 1;
                 int destination = j + 1;
                 if (source == destination) { // Dont need to add oneself to edge lists
                     continue;
                 }
-                if (!edgeAdded[i][j]) {
-                    int weight = Integer.parseInt(edgeData[j]);
-                    Edge edge = new Edge(source, destination, weight);
-                    pq.add(edge);
-                    edgeAdded[i][j] = true;
-                    edgeAdded[j][i] = true;
-                }
+                int weight = Integer.parseInt(edgeData[j]);
+                Edge edge = new Edge(source, destination, weight);
+                lst.add(edge);
             }
         }
         //
-        ArrayList<Edge> T = new ArrayList<Edge>();
-        //
-        while (!pq.isEmpty()) {
-            Edge edgePolled = pq.poll();
+        Collections.sort(lst, new EdgeWeightComparator());
+        // O(N * ackerman(N))
+        for (Edge e : lst) {
+            if (!ufds.isSameSet(e.source, e.destination)) {
+                ufds.unionSet(e.source, e.destination);
+                pw.println(Integer.toString(e.source) + " " +
+                        Integer.toString(e.destination));
+            }
+        }
 
-            int x = ufds.findParent(edgePolled.source);
-            int y = ufds.findParent(edgePolled.destination);
-            if (x != y) {
-                ufds.unionSet(edgePolled.source, edgePolled.destination);
-                T.add(edgePolled);
-            }
-        }
-        for (Edge z : T) {
-            pw.println(z.source + "\s" + z.destination);
-        }
         pw.close();
     }
 }
@@ -81,11 +70,13 @@ class UFDS {
 
     }
 
-    int findParent(int source) {
-        while (source != parent[source]) {
-            source = parent[source];
+    int findParent(int i) {
+        if (i == parent[i]) {
+            return i;
+        } else {
+            parent[i] = findParent(parent[i]); //keep note of this line bruh
+            return parent[i];
         }
-        return source;
     }
 
     boolean isSameSet(int a, int b) {
@@ -94,14 +85,9 @@ class UFDS {
 
     void unionSet(int sourceA, int sourceB) {
         if (!isSameSet(sourceA, sourceB)) {
-            int x = findParent(sourceA);
-            int y = findParent(sourceB);
-            parent[y] = x; // set union B into A(Owner)
-            // parent[sourceB] = x; // Another Flattening
+            parent[findParent(sourceB)] = findParent(sourceA);
         }
-
     }
-
 }
 
 class EdgeWeightComparator implements Comparator<Edge> {
@@ -119,8 +105,13 @@ class EdgeWeightComparator implements Comparator<Edge> {
 /*
  * Do Kruskal Algorithm to make a minimum spanning tree
  * Did a hybrid(While PQ Loop instead of for loop)
- * Kruskal starts from smallest edge weight whereas Prims -- u can start from a
+ * Kruskal starts from smallest edge weight whereas Prims -- u can start from
+ * a
  * root node that u like
  * Use UFDS to keep track of parents
  * Just iterate edges that are present in MST
+ *
+ * // *
+ * // * PseudoCode submission
+ * //
  */
