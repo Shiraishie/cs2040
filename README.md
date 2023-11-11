@@ -25,14 +25,13 @@ Island3
 
 Lost Map
 
+
 THA -- 2 weeks assignments
 
 bestrelayteam, cardtrading
 
 joinstrings, teque
 
- //Dedicate 1 week for this THA..
- 
 almostunionfind, nicknames
  
 dominos, millionaremadness
