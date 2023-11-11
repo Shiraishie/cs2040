@@ -1,9 +1,6 @@
 # cs2040
 My CS2040 Kattis Code archived
 
-Added my thoughts and algorithmn implemented for those who needs reference
-
-
 ODA -- In ascending order of weekly release
 
 T9 Spelling
