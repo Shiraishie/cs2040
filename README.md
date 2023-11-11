@@ -1,8 +1,7 @@
 # cs2040
-My CS2040 Kattis Code! Taken in AY2023/2024 SEM 1
+My CS2040 Kattis Code archived
 
 Added my thoughts and algorithmn implemented for those who needs reference
-
 
 
 ODA -- In ascending order of weekly release
