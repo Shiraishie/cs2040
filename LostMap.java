@@ -104,7 +104,7 @@ class EdgeWeightComparator implements Comparator<Edge> {
 
 /*
  * Do Kruskal Algorithm to make a minimum spanning tree
- * Did a hybrid(While PQ Loop instead of for loop)
+ * Can use either PQ or for loop.
  * Kruskal starts from smallest edge weight whereas Prims -- u can start from
  * a
  * root node that u like
