@@ -20,7 +20,7 @@ public class humancannonball {
         Coordinates b = new Coordinates(Double.parseDouble(endcoord[0]), Double.parseDouble(endcoord[1]));
         //
         int n = Integer.parseInt(br.readLine()); // num of cannons
-        all.add(a);
+        all.add(a); //you could use array as well
         all.add(b);
 
         for (int i = 0; i < n; i++) {
