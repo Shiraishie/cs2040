@@ -20,6 +20,7 @@ Weak Vertices
 Island3
 
 Lost Map
+Human CannonBall Run
 
 
 THA -- 2 weeks assignments
