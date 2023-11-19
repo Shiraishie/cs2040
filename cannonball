@@ -6,7 +6,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-public class humancannonball2 {
+public class humancannonball {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)));
@@ -29,35 +29,39 @@ public class humancannonball2 {
                     Double.parseDouble(cannonCoord[1]));
             all.add(cannon);
         }
-        // making adjmatrix
         double[][] adjMatrix = new double[n + 2][n + 2];
-        // Direct Running for A to B
-        double abDistance = getDistance(a, b);
-        adjMatrix[0][1] = abDistance / 5;
-        adjMatrix[1][0] = abDistance / 5;
-        //
-        for (int i = 2; i < n+2; i++){ //from A to ALL cannons
-            Coordinates cannon = all.get(i);
-            double dist = getDistance(a, cannon);
-            if ()
+        //run from A to B and cannons, you gotta run from A to any vertex
+        for (int i = 1; i < n+2; i++){
+            Coordinates destination = all.get(i);
+            double dist = getDistance(a, destination);
+            adjMatrix[0][i] = dist / 5;
         }
-
-
-        for (int i = 0; i < n + 2; i++) {
-            for (int j = 0; j < n + 2; j++) {
-                if (i != j) {
+        //from all cannons to B and vice versa
+        for (int i = 1; i< n+2; i++){
+            for (int j = 1; j< n+2; j++){
+                if (i!=j){
                     Coordinates first = all.get(i);
                     Coordinates second = all.get(j);
-                    adjMatrix[i][j] = getDistance(first, second);
+                    double dist = getDistance(first, second);
+                    adjMatrix[i][j] = Math.min((Math.abs(dist-50) / 5) + 2 ,  dist / 5);
                 }
             }
         }
-        pw.println(adjMatrix);
+        //floyd
+        for (int i = 0; i < n+2; i++){ //this is my intermediate node
+            for (int j = 0; j < n+2; j++){
+                for (int k =0; k < n+2; k++){
+                    adjMatrix[j][k] = Math.min(adjMatrix[j][i] + adjMatrix[i][k], adjMatrix[j][k]);
+                }
+            }
+        }
+        
+        pw.println(adjMatrix[0][1]);
         pw.close();
     }
 
     static double getDistance(Coordinates a, Coordinates b) {
-        return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+        return Math.hypot(a.x-b.x,a.y - b.y);
     }
 
 }
